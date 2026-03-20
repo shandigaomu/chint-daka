@@ -132,11 +132,19 @@ const address = [
 // 已按你的要求改为 240528005
 const TICKET = "240528005";
 
+// Cloudflare Worker 代理地址（创建 Worker 后把这里替换成你的 worker URL）
+// 例如：https://abcd1234.yourname.workers.dev
+const PROXY_BASE = "https://chint-daka.1500653785.workers.dev/";
+
+function proxyUrl(path) {
+  return PROXY_BASE.replace(/\/$/, "") + path;
+}
+
 let token = "";
 
 async function getToken() {
   setStatus("正在获取 token...");
-  const url = "https://www.mychint.com:8087/webapikaoqin/api/v1/KaoQin/CheckLoginTicket";
+  const url = proxyUrl("/check-login-ticket");
   const result = await postForm(
     url,
     { ticket: TICKET },
@@ -157,8 +165,7 @@ async function getToken() {
 }
 
 async function getCardInfo(dateStr) {
-  const url =
-    "https://www.mychint.com:8087/webapikaoqin/api/v1/KaoQin/GetMyCardLogInfo";
+  const url = proxyUrl("/get-card-info");
 
   const result = await postForm(
     url,
@@ -226,7 +233,7 @@ async function daka(cardType) {
   const currentTime = formatDate(new Date());
   setStatus(`${currentTime} 正在${typeText}打卡...`);
 
-  const url = "https://eip.chint.com/kaoqincardapi/api/v1/KaoQin/CreateCardLog";
+  const url = proxyUrl("/create-card-log");
   const result = await postForm(
     url,
     {
